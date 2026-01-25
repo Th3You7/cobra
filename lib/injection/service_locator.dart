@@ -15,7 +15,7 @@ final networkInfoProvider = Provider<NetworkInfo>((ref) {
 
 // Storage Providers
 final localStorageProvider = Provider<LocalStorage>((ref) {
-  final storage = LocalStorage();
+  final storage = LocalStorage.instance;
   // Note: init() should be called before first use
   // This will be handled in app initialization
   return storage;
