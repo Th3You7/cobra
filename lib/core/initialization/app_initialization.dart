@@ -17,12 +17,14 @@ class AppInitialization {
       }
       // Initialize the storage
       await LocalStorage.instance.init();
-      // TODO: Initialize the secure storage, Isar and other services here
-      // Initialize the secure storage
+      // TODO: Initialize Isar database when needed
+      // TODO: Initialize analytics, crash reporting, etc.
 
       if (kDebugMode) {
-        Logger().d('Initializing App...');
-        Logger().d('Development environment');
+        Logger().d('✅ App initialized successfully');
+        Logger().d('📍 Environment: ${EnvironmentConfig.current}');
+        Logger().d('🌐 Base URL: ${EnvironmentConfig.baseUrl}');
+        Logger().d('💾 LocalStorage: ${LocalStorage.instance.isInitialized}');
       }
     } catch (e) {
       Logger().e('App initialization failed: $e');
