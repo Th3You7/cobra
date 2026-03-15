@@ -11,9 +11,7 @@ class DeviceInfoPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Device Not Authorized'),
-      ),
+      appBar: AppBar(title: const Text('Device is Not Authorized')),
       body: deviceInfo == null
           ? _buildNoInfoView(context)
           : _buildDeviceInfoView(context),
@@ -54,11 +52,7 @@ class DeviceInfoPage extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
-            _buildInfoCard(
-              context,
-              label: 'Device Key',
-              value: info.deviceKey,
-            ),
+            _buildInfoCard(context, label: 'Device Key', value: info.deviceKey),
             const SizedBox(height: 16),
             _buildInfoCard(
               context,
@@ -85,8 +79,8 @@ class DeviceInfoPage extends StatelessWidget {
             Text(
               label,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 4),
             SelectableText(

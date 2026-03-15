@@ -23,9 +23,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: AppConfig.appName,
-      theme: ThemeConfig.lightTheme,
-      darkTheme: ThemeConfig.darkTheme,
-      themeMode: ThemeMode.dark, // Default to dark theme for IPTV
+      theme: ThemeConfig.retroTheme,
+      darkTheme: ThemeConfig.retroTheme,
+      themeMode: ThemeMode.dark,
       routerConfig: AppRouter.appRouter,
       debugShowCheckedModeBanner: false,
     );

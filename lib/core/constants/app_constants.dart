@@ -7,6 +7,12 @@ class AppConstants {
   static const String deviceInfoRoute = '/device-info';
   static const String loginRoute = '/login';
   static const String homeRoute = '/home';
+  static const String homeLiveRoute = '/home/live';
+  static const String homeMoviesRoute = '/home/movies';
+  static const String homeSeriesRoute = '/home/series';
+  static const String homeCatchupRoute = '/home/catchup';
+  static const String homePlaylistRoute = '/home/playlist';
+  static const String homeSettingsRoute = '/home/settings';
   static const String playerRoute = '/player';
 
   // Pagination

@@ -2,6 +2,7 @@ import 'package:cobra/core/constants/app_constants.dart';
 import 'package:cobra/core/services/device_info_service.dart';
 import 'package:cobra/injection/service_locator.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -50,6 +51,12 @@ class _SplashPageState extends ConsumerState<SplashPage> {
     final deviceInfo = await DeviceInfoService().getDeviceInfo();
 
     if (!mounted) return;
+
+    // Dev: skip device authorization and go straight to home
+    if (kDebugMode) {
+      context.go(AppConstants.homeRoute);
+      return;
+    }
 
     // Check authorization
     final deviceAuthService = ref.read(deviceAuthServiceProvider);
