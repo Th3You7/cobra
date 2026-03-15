@@ -17,6 +17,9 @@ class ApiConfig {
   static const String categories = '/categories';
   static const String favorite = '/favorite';
 
+  // Device
+  static const String deviceCheck = '/device/check';
+
   // API Headers
   static const Map<String, String> headers = {
     'Content-Type': 'application/json',

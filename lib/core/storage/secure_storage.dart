@@ -53,7 +53,15 @@ class SecureStorage {
       throw StorageException('Failed to get refresh token: $e');
     }
   }
-  
+
+  Future<void> deleteRefreshToken() async {
+    try {
+      await _storage.delete(key: StorageKeys.refreshToken);
+    } catch (e) {
+      throw StorageException('Failed to delete refresh token: $e');
+    }
+  }
+
   // Generic operations
   Future<void> write(String key, String value) async {
     try {
