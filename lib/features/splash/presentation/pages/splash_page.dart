@@ -1,22 +1,23 @@
 import 'package:cobra/core/constants/app_constants.dart';
-import 'package:cobra/core/models/device_info.dart';
 import 'package:cobra/core/services/device_info_service.dart';
+import 'package:cobra/injection/service_locator.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/config/app_config.dart';
 
 /// Splash screen - first screen user sees.
 /// Checks network, fetches device info, verifies authorization, then navigates.
-class SplashPage extends StatefulWidget {
+class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});
 
   @override
-  State<SplashPage> createState() => _SplashPageState();
+  ConsumerState<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> {
+class _SplashPageState extends ConsumerState<SplashPage> {
   bool _hasNetworkError = false;
 
   @override
@@ -51,7 +52,8 @@ class _SplashPageState extends State<SplashPage> {
     if (!mounted) return;
 
     // Check authorization
-    final isAuthorized = await _checkDeviceAuthorization(deviceInfo);
+    final deviceAuthService = ref.read(deviceAuthServiceProvider);
+    final isAuthorized = await deviceAuthService.checkAuthorization(deviceInfo);
 
     if (!mounted) return;
 
@@ -60,13 +62,6 @@ class _SplashPageState extends State<SplashPage> {
     } else {
       context.go(AppConstants.deviceInfoRoute, extra: deviceInfo);
     }
-  }
-
-  // Check if device is authorized, replace with api call when ready
-  Future<bool> _checkDeviceAuthorization(DeviceInfo deviceInfo) async {
-    // TODO: Call API: POST /device/check with deviceInfo.toJson()
-    // For now: always return false
-    return false;
   }
 
   @override

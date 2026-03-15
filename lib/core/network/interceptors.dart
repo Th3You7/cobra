@@ -54,8 +54,12 @@ class AuthInterceptor extends Interceptor {
       }
       
       // If refresh failed or no refresh token, clear tokens and logout
-      await _secureStorage.deleteToken();
-      await _secureStorage.deleteRefreshToken();
+      try {
+        await _secureStorage.deleteToken();
+        await _secureStorage.deleteRefreshToken();
+      } catch (_) {
+        // Ignore storage errors when clearing tokens; still proceed to reject with 401
+      }
       // Note: Navigation to login will be handled by auth feature
     }
 
