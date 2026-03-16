@@ -36,4 +36,12 @@ class CategoriesRepository {
     final encoded = jsonEncode(list.map((e) => e.toJson()).toList());
     await _localStorage.setString(StorageKeys.categories, encoded);
   }
+
+  /// Removes all categories for the given source.
+  Future<void> removeBySourceId(String sourceId) async {
+    final list = await getAll();
+    list.removeWhere((c) => c.sourceId == sourceId);
+    final encoded = jsonEncode(list.map((e) => e.toJson()).toList());
+    await _localStorage.setString(StorageKeys.categories, encoded);
+  }
 }

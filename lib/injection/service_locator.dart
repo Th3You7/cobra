@@ -5,6 +5,7 @@ import '../core/services/device_auth_service.dart';
 import '../core/storage/local_storage.dart';
 import '../core/storage/secure_storage.dart';
 import '../features/playlist/data/datasources/m3u_parser.dart';
+import '../features/playlist/data/datasources/xtream_parser.dart';
 import '../features/playlist/data/repositories/categories_repository.dart';
 import '../features/playlist/data/repositories/channels_repository.dart';
 import '../features/playlist/data/repositories/sources_repository.dart';
@@ -54,27 +55,71 @@ final m3uParserProvider = Provider<M3uParser>((ref) {
   return M3uParser();
 });
 
+final xtreamParserProvider = Provider<XtreamParser>((ref) {
+  return XtreamParser();
+});
+
 final syncServiceProvider = Provider<SyncService>((ref) {
   return SyncService(
     sourcesRepository: ref.watch(sourcesRepositoryProvider),
     channelsRepository: ref.watch(channelsRepositoryProvider),
     categoriesRepository: ref.watch(categoriesRepositoryProvider),
     m3uParser: ref.watch(m3uParserProvider),
+    xtreamParser: ref.watch(xtreamParserProvider),
   );
 });
 
 final playlistServiceProvider = Provider<PlaylistService>((ref) {
   return PlaylistService(
     sourcesRepository: ref.watch(sourcesRepositoryProvider),
+    channelsRepository: ref.watch(channelsRepositoryProvider),
+    categoriesRepository: ref.watch(categoriesRepositoryProvider),
     syncService: ref.watch(syncServiceProvider),
   );
 });
 
 final sourcesProvider = FutureProvider<List<Source>>((ref) async {
-  return ref.watch(sourcesRepositoryProvider).getAll();
+  return ref.watch(playlistServiceProvider).getSources();
 });
 
 final hasPlaylistProvider = FutureProvider<bool>((ref) async {
-  final list = await ref.watch(sourcesRepositoryProvider).getAll();
+  final list = await ref.watch(playlistServiceProvider).getSources();
   return list.isNotEmpty;
 });
+
+/// Notifier that performs playlist actions and invalidates [sourcesProvider]
+/// and [hasPlaylistProvider] so the UI refreshes. Use this for add/remove in the UI.
+class PlaylistNotifier extends Notifier<void> {
+  @override
+  void build() {}
+
+  Future<void> addM3uSource({required String url, String? name}) async {
+    await ref.read(playlistServiceProvider).addM3uSource(url: url, name: name);
+    ref.invalidate(sourcesProvider);
+    ref.invalidate(hasPlaylistProvider);
+  }
+
+  Future<void> addXtreamSource({
+    required String serverUrl,
+    required String username,
+    required String password,
+    String? name,
+  }) async {
+    await ref.read(playlistServiceProvider).addXtreamSource(
+          serverUrl: serverUrl,
+          username: username,
+          password: password,
+          name: name,
+        );
+    ref.invalidate(sourcesProvider);
+    ref.invalidate(hasPlaylistProvider);
+  }
+
+  Future<void> removeSource(String sourceId) async {
+    await ref.read(playlistServiceProvider).removeSource(sourceId);
+    ref.invalidate(sourcesProvider);
+    ref.invalidate(hasPlaylistProvider);
+  }
+}
+
+final playlistNotifierProvider = NotifierProvider<PlaylistNotifier, void>(PlaylistNotifier.new);

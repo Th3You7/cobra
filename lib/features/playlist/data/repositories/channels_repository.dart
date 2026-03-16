@@ -52,4 +52,12 @@ class ChannelsRepository {
     final encoded = jsonEncode(list.map((e) => e.toJson()).toList());
     await _localStorage.setString(StorageKeys.channels, encoded);
   }
+
+  /// Removes all channels for the given source (all types).
+  Future<void> removeBySourceId(String sourceId) async {
+    final list = await getAll();
+    list.removeWhere((c) => c.sourceId == sourceId);
+    final encoded = jsonEncode(list.map((e) => e.toJson()).toList());
+    await _localStorage.setString(StorageKeys.channels, encoded);
+  }
 }

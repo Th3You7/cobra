@@ -1,12 +1,14 @@
 // lib/core/models/source.dart
 
-/// Playlist source: M3U URL or Xtream (later).
+/// Playlist source: M3U URL or Xtream.
 class Source {
   final String id;
   final String type; // 'm3u' | 'xtream'
   final String url;
   final String? name;
-  final String syncStatus; // 'idle' | 'syncing' | 'success' | 'error'
+  final String syncStatus; // 'idle' | 'syncing' | 'success' | 'error' | 'removing'
+  final String? username; // Xtream only
+  final String? password; // Xtream only
 
   const Source({
     required this.id,
@@ -14,6 +16,8 @@ class Source {
     required this.url,
     this.name,
     this.syncStatus = 'idle',
+    this.username,
+    this.password,
   });
 
   Map<String, dynamic> toJson() => {
@@ -22,6 +26,8 @@ class Source {
         'url': url,
         if (name != null) 'name': name,
         'sync_status': syncStatus,
+        if (username != null) 'username': username,
+        if (password != null) 'password': password,
       };
 
   factory Source.fromJson(Map<String, dynamic> json) {
@@ -31,6 +37,8 @@ class Source {
       url: json['url'] as String,
       name: json['name'] as String?,
       syncStatus: json['sync_status'] as String? ?? 'idle',
+      username: json['username'] as String?,
+      password: json['password'] as String?,
     );
   }
 
@@ -40,6 +48,8 @@ class Source {
     String? url,
     String? name,
     String? syncStatus,
+    String? username,
+    String? password,
   }) {
     return Source(
       id: id ?? this.id,
@@ -47,6 +57,8 @@ class Source {
       url: url ?? this.url,
       name: name ?? this.name,
       syncStatus: syncStatus ?? this.syncStatus,
+      username: username ?? this.username,
+      password: password ?? this.password,
     );
   }
 }
