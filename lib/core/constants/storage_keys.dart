@@ -18,4 +18,9 @@ class StorageKeys {
   // Settings
   static const String autoPlay = 'auto_play';
   static const String parentalControl = 'parental_control';
+
+  // Playlist / mock DB
+  static const String sources = 'sources';
+  static const String channels = 'channels';
+  static const String categories = 'categories';
 }
