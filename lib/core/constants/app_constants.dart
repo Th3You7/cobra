@@ -17,9 +17,12 @@ class AppConstants {
   static const String homePlaylistAddRoute = '/home/playlist/add';
   static const String homeSettingsRoute = '/home/settings';
 
+  // Content detail (movie/series) and full-screen player
+  static const String homeContentDetailRoute = '/home/content/detail';
+  static const String playerRoute = '/player';
+
   // Planned / not yet in router
   static const String loginRoute = '/login';
-  static const String playerRoute = '/player';
 
   // Pagination
   static const int defaultPageSize = 20;

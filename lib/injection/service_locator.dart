@@ -106,6 +106,40 @@ final liveChannelsProvider = FutureProvider<List<Channel>>((ref) async {
   return live;
 });
 
+/// Movies: categories and channels (type == 'movie').
+final movieCategoriesProvider = FutureProvider<List<Category>>((ref) async {
+  final repo = ref.watch(categoriesRepositoryProvider);
+  final list = await repo.getAll();
+  final movie = list.where((c) => c.type == 'movie').toList();
+  movie.sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
+  return movie;
+});
+
+final movieChannelsProvider = FutureProvider<List<Channel>>((ref) async {
+  final repo = ref.watch(channelsRepositoryProvider);
+  final list = await repo.getAll();
+  final movie = list.where((c) => c.type == 'movie').toList();
+  movie.sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
+  return movie;
+});
+
+/// Series: categories and channels (type == 'series').
+final seriesCategoriesProvider = FutureProvider<List<Category>>((ref) async {
+  final repo = ref.watch(categoriesRepositoryProvider);
+  final list = await repo.getAll();
+  final series = list.where((c) => c.type == 'series').toList();
+  series.sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
+  return series;
+});
+
+final seriesChannelsProvider = FutureProvider<List<Channel>>((ref) async {
+  final repo = ref.watch(channelsRepositoryProvider);
+  final list = await repo.getAll();
+  final series = list.where((c) => c.type == 'series').toList();
+  series.sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
+  return series;
+});
+
 /// Notifier that performs playlist actions and invalidates [sourcesProvider]
 /// and [hasPlaylistProvider] so the UI refreshes. Use this for add/remove in the UI.
 class PlaylistNotifier extends Notifier<void> {
@@ -117,6 +151,10 @@ class PlaylistNotifier extends Notifier<void> {
     ref.invalidate(hasPlaylistProvider);
     ref.invalidate(liveCategoriesProvider);
     ref.invalidate(liveChannelsProvider);
+    ref.invalidate(movieCategoriesProvider);
+    ref.invalidate(movieChannelsProvider);
+    ref.invalidate(seriesCategoriesProvider);
+    ref.invalidate(seriesChannelsProvider);
   }
 
   Future<void> addM3uSource({required String url, String? name}) async {

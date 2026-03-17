@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/config/app_config.dart';
 import '../../constants/home_grid_items.dart';
 import '../../models/home_grid_item.dart';
 
@@ -13,9 +12,6 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(AppConfig.appName),
-      ),
       body: Stack(
         children: [
           Center(

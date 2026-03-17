@@ -2,10 +2,8 @@ import 'package:better_player_enhanced/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../core/config/app_config.dart';
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/models/category.dart';
 import '../../../../core/models/channel.dart';
 import '../../../../injection/service_locator.dart';
@@ -54,108 +52,47 @@ class _LivePageState extends ConsumerState<LivePage> {
 
     return Scaffold(
       backgroundColor: _liveDarkPurple,
-      body: Column(
-        children: [
-          _buildTopBar(context, theme),
-          Expanded(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(
-                  width: _livePanelWidthCategories,
-                  child: categoriesAsync.when(
-                    data: (categories) => _buildCategoriesPanel(
-                      context,
-                      theme,
-                      categories,
-                      channelsAsync.valueOrNull ?? [],
-                    ),
-                    loading: () => const Center(child: CircularProgressIndicator()),
-                    error: (e, _) => Center(child: Text('$e', style: const TextStyle(color: Colors.white70))),
-                  ),
+      body: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              width: _livePanelWidthCategories,
+              child: categoriesAsync.when(
+                data: (categories) => _buildCategoriesPanel(
+                  context,
+                  theme,
+                  categories,
+                  channelsAsync.valueOrNull ?? [],
                 ),
-                Container(
-                  width: 1,
-                  color: Colors.white12,
-                ),
-                SizedBox(
-                  width: _livePanelWidthChannels,
-                  child: channelsAsync.when(
-                    data: (allChannels) => _buildChannelsPanel(
-                      context,
-                      theme,
-                      allChannels,
-                    ),
-                    loading: () => const Center(child: CircularProgressIndicator()),
-                    error: (e, _) => Center(child: Text('$e', style: const TextStyle(color: Colors.white70))),
-                  ),
-                ),
-                Container(
-                  width: 1,
-                  color: Colors.white12,
-                ),
-                Expanded(
-                  child: _buildPlayerColumn(context, theme),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTopBar(BuildContext context, ThemeData theme) {
-    return Container(
-      height: 56,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: _liveDarkPurple,
-        border: Border(bottom: BorderSide(color: Colors.white12)),
-      ),
-      child: Row(
-        children: [
-          // Profile icon (left)
-          Material(
-            color: _liveTabHighlight,
-            borderRadius: BorderRadius.circular(20),
-            child: InkWell(
-              onTap: () {},
-              borderRadius: BorderRadius.circular(20),
-              child: const SizedBox(width: 40, height: 40, child: Icon(Icons.person, color: Colors.black87)),
-            ),
-          ),
-          const SizedBox(width: 16),
-          // Tabs
-          _TopTab(label: 'Home', isSelected: false, onTap: () => context.go(AppConstants.homeRoute)),
-          _TopTab(label: 'Live', isSelected: true, onTap: () {}),
-          _TopTab(label: 'Movies', isSelected: false, onTap: () => context.go(AppConstants.homeMoviesRoute)),
-          _TopTab(label: 'Series', isSelected: false, onTap: () => context.go(AppConstants.homeSeriesRoute)),
-          const Spacer(),
-          // Search
-          SizedBox(
-            width: 200,
-            height: 36,
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Search',
-                hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 14),
-                prefixIcon: Icon(Icons.search, size: 20, color: Colors.white.withValues(alpha: 0.7)),
-                filled: true,
-                fillColor: Colors.white.withValues(alpha: 0.1),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, _) => Center(child: Text('$e', style: const TextStyle(color: Colors.white70))),
               ),
-              style: const TextStyle(color: Colors.white, fontSize: 14),
             ),
-          ),
-          const SizedBox(width: 12),
-          Text(
-            'Cobra IPTV',
-            style: theme.textTheme.titleSmall?.copyWith(color: Colors.white70, fontWeight: FontWeight.w600),
-          ),
-        ],
-      ),
+            Container(
+              width: 1,
+              color: Colors.white12,
+            ),
+            SizedBox(
+              width: _livePanelWidthChannels,
+              child: channelsAsync.when(
+                data: (allChannels) => _buildChannelsPanel(
+                  context,
+                  theme,
+                  allChannels,
+                ),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, _) => Center(child: Text('$e', style: const TextStyle(color: Colors.white70))),
+              ),
+            ),
+            Container(
+              width: 1,
+              color: Colors.white12,
+            ),
+            Expanded(
+              child: _buildPlayerColumn(context, theme),
+            ),
+          ],
+        ),
     );
   }
 
@@ -363,46 +300,6 @@ class _CategoryItem {
   _CategoryItem({this.id, required this.name, required this.count});
 }
 
-class _TopTab extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _TopTab({required this.label, required this.isSelected, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 4),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: isSelected ? _liveTabHighlight : Colors.transparent,
-                  width: 3,
-                ),
-              ),
-            ),
-            child: Text(
-              label,
-              style: TextStyle(
-                color: isSelected ? _liveTabHighlight : Colors.white70,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                fontSize: 15,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 /// Wraps better_player with channel name overlay.
 class _LivePlayer extends StatefulWidget {
   final String streamUrl;
@@ -435,8 +332,10 @@ class _LivePlayerState extends State<_LivePlayer> {
       final dataSource = BetterPlayerDataSource.network(
         widget.streamUrl,
         bufferingConfiguration: BetterPlayerBufferingConfiguration(
-          bufferForPlaybackMs: 2000,
+          minBufferMs: 5000,
           maxBufferMs: AppConfig.videoBufferDuration.inMilliseconds,
+          bufferForPlaybackMs: 2000,
+          bufferForPlaybackAfterRebufferMs: 2000,
         ),
       );
       _controller = BetterPlayerController(
