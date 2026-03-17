@@ -4,7 +4,8 @@ import '../../features/home/presentation/pages/catchup_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/home/presentation/pages/live_page.dart';
 import '../../features/home/presentation/pages/movies_page.dart';
-import '../../features/home/presentation/pages/playlist_page.dart';
+import '../../features/playlist/presentation/pages/add_playlist_page.dart';
+import '../../features/playlist/presentation/pages/playlist_page.dart';
 import '../../features/home/presentation/pages/series_page.dart';
 import '../../features/home/presentation/pages/settings_page.dart';
 import '../../features/splash/presentation/pages/device_info_page.dart';
@@ -57,6 +58,11 @@ class AppRouter {
             path: 'playlist',
             name: 'Playlist',
             builder: (context, state) => const PlaylistPage(),
+          ),
+          GoRoute(
+            path: 'playlist/add',
+            name: 'Add Playlist',
+            builder: (context, state) => const AddPlaylistPage(),
           ),
           GoRoute(
             path: 'settings',

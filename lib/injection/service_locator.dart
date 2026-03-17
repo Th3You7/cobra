@@ -93,10 +93,18 @@ class PlaylistNotifier extends Notifier<void> {
   @override
   void build() {}
 
-  Future<void> addM3uSource({required String url, String? name}) async {
-    await ref.read(playlistServiceProvider).addM3uSource(url: url, name: name);
+  void _invalidateSources() {
     ref.invalidate(sourcesProvider);
     ref.invalidate(hasPlaylistProvider);
+  }
+
+  Future<void> addM3uSource({required String url, String? name}) async {
+    await ref.read(playlistServiceProvider).addM3uSource(
+          url: url,
+          name: name,
+          onSyncComplete: _invalidateSources,
+        );
+    _invalidateSources();
   }
 
   Future<void> addXtreamSource({
@@ -110,15 +118,23 @@ class PlaylistNotifier extends Notifier<void> {
           username: username,
           password: password,
           name: name,
+          onSyncComplete: _invalidateSources,
         );
-    ref.invalidate(sourcesProvider);
-    ref.invalidate(hasPlaylistProvider);
+    _invalidateSources();
   }
 
   Future<void> removeSource(String sourceId) async {
     await ref.read(playlistServiceProvider).removeSource(sourceId);
     ref.invalidate(sourcesProvider);
     ref.invalidate(hasPlaylistProvider);
+  }
+
+  void retrySync(String sourceId) {
+    ref.read(playlistServiceProvider).retrySync(
+          sourceId,
+          onComplete: _invalidateSources,
+        );
+    _invalidateSources();
   }
 }
 

@@ -1,6 +1,7 @@
 // lib/features/playlist/data/datasources/m3u_parser.dart
 
 import 'package:dio/dio.dart';
+import 'package:logger/logger.dart';
 
 /// Raw entry from a parsed M3U playlist (before mapping to Channel/Category).
 class M3uEntry {
@@ -20,16 +21,36 @@ class M3uEntry {
 }
 
 class M3uParser {
-  M3uParser({Dio? dio}) : _dio = dio ?? Dio();
+  M3uParser({Dio? dio})
+      : _dio = dio ??
+            Dio(
+              BaseOptions(
+                connectTimeout: const Duration(seconds: 10),
+                receiveTimeout: const Duration(seconds: 20),
+              ),
+            );
+  final _log = Logger(printer: PrettyPrinter());
 
   final Dio _dio;
 
   /// Fetches the M3U URL and parses the response. Resolves relative URLs against baseUrl.
   Future<List<M3uEntry>> fetchAndParse(String url) async {
-    final response = await _dio.get<String>(url);
+    _log.d('1.Fetching M3U URL: $url');
+    Response<String> response;
+    try {
+      response = await _dio.get<String>(url);
+    } on DioException catch (e, st) {
+      _log.e('M3U fetch failed (DioException) for URL: $url', error: e, stackTrace: st);
+      rethrow;
+    } catch (e, st) {
+      _log.e('M3U fetch failed (unexpected error) for URL: $url', error: e, stackTrace: st);
+      rethrow;
+    }
+    _log.d('2.Response status: ${response.statusCode}, length: ${response.data?.length}');
     final content = response.data;
     if (content == null || content.isEmpty) return [];
     final baseUrl = _baseUrlFrom(url);
+    _log.d('3.Base URL: $baseUrl');
     return parse(content, baseUrl);
   }
 
@@ -66,13 +87,15 @@ class M3uParser {
           !streamUrl.startsWith('https://')) {
         streamUrl = baseUrl + streamUrl;
       }
-      entries.add(M3uEntry(
-        name: attrs['name'] ?? 'Unknown',
-        groupTitle: attrs['groupTitle'],
-        url: streamUrl,
-        tvgLogo: attrs['tvgLogo'],
-        tvgId: attrs['tvgId'],
-      ));
+      entries.add(
+        M3uEntry(
+          name: attrs['name'] ?? 'Unknown',
+          groupTitle: attrs['groupTitle'],
+          url: streamUrl,
+          tvgLogo: attrs['tvgLogo'],
+          tvgId: attrs['tvgId'],
+        ),
+      );
     }
     return entries;
   }
@@ -88,10 +111,14 @@ class M3uParser {
       final key = m.group(1)!.toLowerCase().replaceAll('-', '');
       final value = m.group(2);
       final v = value?.isEmpty == true ? null : value;
-      if (key == 'grouptitle') result['groupTitle'] = v;
-      else if (key == 'tvglogo') result['tvgLogo'] = v;
-      else if (key == 'tvgid') result['tvgId'] = v;
-      else if (key == 'tvgname') result['tvgName'] = v;
+      if (key == 'grouptitle')
+        result['groupTitle'] = v;
+      else if (key == 'tvglogo')
+        result['tvgLogo'] = v;
+      else if (key == 'tvgid')
+        result['tvgId'] = v;
+      else if (key == 'tvgname')
+        result['tvgName'] = v;
     }
     result['name'] = result['name'] ?? result['tvgName'] ?? 'Unknown';
     return result;
