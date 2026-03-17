@@ -49,8 +49,8 @@ dependencies:
   isar_flutter_libs: ^3.1.0+1
   path_provider: ^2.1.5
 
-  # Video Player
-  better_player: ^0.0.84
+  # Video Player (enhanced fork: Flutter 3.27+ / hashValues fix)
+  better_player_enhanced: ^1.0.1
 
   # UI
   shimmer: ^3.0.0

@@ -11,6 +11,8 @@ import '../features/playlist/data/repositories/channels_repository.dart';
 import '../features/playlist/data/repositories/sources_repository.dart';
 import '../features/playlist/data/services/playlist_service.dart';
 import '../features/playlist/data/services/sync_service.dart';
+import '../core/models/category.dart';
+import '../core/models/channel.dart';
 import '../core/models/source.dart';
 
 // Network Providers
@@ -87,6 +89,23 @@ final hasPlaylistProvider = FutureProvider<bool>((ref) async {
   return list.isNotEmpty;
 });
 
+/// Live TV: categories and channels (type == 'live').
+final liveCategoriesProvider = FutureProvider<List<Category>>((ref) async {
+  final repo = ref.watch(categoriesRepositoryProvider);
+  final list = await repo.getAll();
+  final live = list.where((c) => c.type == 'live').toList();
+  live.sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
+  return live;
+});
+
+final liveChannelsProvider = FutureProvider<List<Channel>>((ref) async {
+  final repo = ref.watch(channelsRepositoryProvider);
+  final list = await repo.getAll();
+  final live = list.where((c) => c.type == 'live').toList();
+  live.sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
+  return live;
+});
+
 /// Notifier that performs playlist actions and invalidates [sourcesProvider]
 /// and [hasPlaylistProvider] so the UI refreshes. Use this for add/remove in the UI.
 class PlaylistNotifier extends Notifier<void> {
@@ -96,6 +115,8 @@ class PlaylistNotifier extends Notifier<void> {
   void _invalidateSources() {
     ref.invalidate(sourcesProvider);
     ref.invalidate(hasPlaylistProvider);
+    ref.invalidate(liveCategoriesProvider);
+    ref.invalidate(liveChannelsProvider);
   }
 
   Future<void> addM3uSource({required String url, String? name}) async {
@@ -125,8 +146,7 @@ class PlaylistNotifier extends Notifier<void> {
 
   Future<void> removeSource(String sourceId) async {
     await ref.read(playlistServiceProvider).removeSource(sourceId);
-    ref.invalidate(sourcesProvider);
-    ref.invalidate(hasPlaylistProvider);
+    _invalidateSources();
   }
 
   void retrySync(String sourceId) {
